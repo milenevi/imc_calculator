@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pessoa.dart';
+import '../models/pessoa.dart';
 
 class CalculadoraIMC extends StatefulWidget {
   @override
@@ -14,6 +14,9 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
   double imc = 0.0;
   String resultado = "";
   bool mostrarLimpar = false;
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _pesoController = TextEditingController();
+  final TextEditingController _alturaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
           child: Column(
             children: [
               TextFormField(
-                initialValue: _pessoa.nome,
+                controller: _nomeController,
                 decoration: const InputDecoration(labelText: 'Nome'),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -36,12 +39,9 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  _pessoa.nome = value!;
-                },
               ),
               TextFormField(
-                initialValue: _pessoa.peso != 0.0 ? _pessoa.peso.toStringAsFixed(1) : '',
+                controller: _pesoController,
                 decoration: const InputDecoration(labelText: 'Peso (kg)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -50,12 +50,9 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  _pessoa.peso = double.parse(value!);
-                },
               ),
               TextFormField(
-                initialValue: _pessoa.altura != 0.0 ? _pessoa.altura.toStringAsFixed(2) : '',
+                controller: _alturaController,
                 decoration: const InputDecoration(labelText: 'Altura (m)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -63,9 +60,6 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                     return 'Por favor, insira sua altura';
                   }
                   return null;
-                },
-                onSaved: (value) {
-                  _pessoa.altura = double.parse(value!);
                 },
               ),
               const SizedBox(height: 20),
@@ -86,6 +80,9 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                     ElevatedButton(
                       onPressed: () {
                         _formKey.currentState!.reset();
+                        _nomeController.clear();
+                        _pesoController.clear();
+                        _alturaController.clear();
                         setState(() {
                           imc = 0.0;
                           resultado = "";
@@ -108,7 +105,12 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
   }
 
   void calcularIMC() {
+    _pessoa.nome = _nomeController.text;
+    _pessoa.peso = double.parse(_pesoController.text);
+    _pessoa.altura = double.parse(_alturaController.text);
+
     final imc = _pessoa.peso / (_pessoa.altura * _pessoa.altura);
+
     String classificacao = '';
 
     if (imc < 16) {
