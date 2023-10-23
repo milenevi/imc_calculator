@@ -13,6 +13,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
 
   double imc = 0.0;
   String resultado = "";
+  bool mostrarLimpar = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
           child: Column(
             children: [
               TextFormField(
-                controller: TextEditingController(text: _pessoa.nome),
+                initialValue: _pessoa.nome,
                 decoration: const InputDecoration(labelText: 'Nome'),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -67,7 +68,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                   _pessoa.altura = double.parse(value!);
                 },
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -77,19 +78,28 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                 },
                 child: const Text('Calcular'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  _formKey.currentState!.reset();
-                  setState(() {
-                    imc = 0.0;
-                    resultado = "";
-                  });
-                },
-                child: const Text('Limpar Dados'),
+              if(mostrarLimpar)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _formKey.currentState!.reset();
+                        setState(() {
+                          imc = 0.0;
+                          resultado = "";
+                          mostrarLimpar = false;
+                        });
+                      },
+                      child: const Text('Limpar Dados'),
+                    ),
+                    const SizedBox(height: 10),
+                    Text('IMC: ${imc.toStringAsFixed(1)}', style: const TextStyle(fontSize: 20)),
+                    Text('Resultado: $resultado', style: const TextStyle(fontSize: 20)),
+                  ],
+                ),
               ),
-              const SizedBox(height: 10),
-              Text('IMC: ${imc.toStringAsFixed(1)}', style: const TextStyle(fontSize: 20)),
-              Text('Resultado: $resultado', style: const TextStyle(fontSize: 20)),
             ],
           ),
         ),
@@ -122,6 +132,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
     setState(() {
       this.imc = imc;
       this.resultado = classificacao;
+      mostrarLimpar = true;
     });
   }
 }
