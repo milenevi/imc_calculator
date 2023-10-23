@@ -31,6 +31,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
           child: Column(
             children: [
               TextFormField(
+                key: const Key('nomeTextField'),
                 controller: _nomeController,
                 decoration: const InputDecoration(labelText: 'Nome'),
                 validator: (value) {
@@ -41,6 +42,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                 },
               ),
               TextFormField(
+                key: const Key('pesoTextField'),
                 controller: _pesoController,
                 decoration: const InputDecoration(labelText: 'Peso (kg)'),
                 keyboardType: TextInputType.number,
@@ -52,6 +54,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                 },
               ),
               TextFormField(
+                key: const Key('alturaTextField'),
                 controller: _alturaController,
                 decoration: const InputDecoration(labelText: 'Altura (m)'),
                 keyboardType: TextInputType.number,
@@ -64,6 +67,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                key: const Key('calcularButton'),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
