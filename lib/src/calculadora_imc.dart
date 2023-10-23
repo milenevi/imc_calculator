@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'pessoa.dart';
 
 class CalculadoraIMC extends StatefulWidget {
   @override
@@ -8,9 +9,8 @@ class CalculadoraIMC extends StatefulWidget {
 
 class _CalculadoraIMCState extends State<CalculadoraIMC> {
   final _formKey = GlobalKey<FormState>();
-  final _nomeController = TextEditingController();
-  final _pesoController = TextEditingController();
-  final _alturaController = TextEditingController();
+  final _pessoa = Pessoa(nome: '', peso: 0.0, altura: 0.0);
+
   double imc = 0.0;
   String resultado = "";
 
@@ -27,7 +27,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
           child: Column(
             children: [
               TextFormField(
-                controller: _nomeController,
+                controller: TextEditingController(text: _pessoa.nome),
                 decoration: const InputDecoration(labelText: 'Nome'),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -35,9 +35,12 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                   }
                   return null;
                 },
+                onSaved: (value) {
+                  _pessoa.nome = value!;
+                },
               ),
               TextFormField(
-                controller: _pesoController,
+                initialValue: _pessoa.peso != 0.0 ? _pessoa.peso.toStringAsFixed(1) : '',
                 decoration: const InputDecoration(labelText: 'Peso (kg)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -46,9 +49,12 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                   }
                   return null;
                 },
+                onSaved: (value) {
+                  _pessoa.peso = double.parse(value!);
+                },
               ),
               TextFormField(
-                controller: _alturaController,
+                initialValue: _pessoa.altura != 0.0 ? _pessoa.altura.toStringAsFixed(2) : '',
                 decoration: const InputDecoration(labelText: 'Altura (m)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -57,19 +63,33 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
                   }
                   return null;
                 },
+                onSaved: (value) {
+                  _pessoa.altura = double.parse(value!);
+                },
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
                     calcularIMC();
                   }
                 },
-                child: Text('Calcular'),
+                child: const Text('Calcular'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _formKey.currentState!.reset();
+                  setState(() {
+                    imc = 0.0;
+                    resultado = "";
+                  });
+                },
+                child: const Text('Limpar Dados'),
               ),
               const SizedBox(height: 10),
-              Text('IMC: $imc', style: TextStyle(fontSize: 20)),
-              Text('Resultado: $resultado', style: TextStyle(fontSize: 20)),
+              Text('IMC: ${imc.toStringAsFixed(1)}', style: const TextStyle(fontSize: 20)),
+              Text('Resultado: $resultado', style: const TextStyle(fontSize: 20)),
             ],
           ),
         ),
@@ -78,14 +98,7 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
   }
 
   void calcularIMC() {
-    // Parse dos valores de peso e altura
-    final peso = double.parse(_pesoController.text);
-    final altura = double.parse(_alturaController.text);
-
-    // Cálculo do IMC
-    final imc = peso / (altura * altura);
-
-    // Definição da classificação
+    final imc = _pessoa.peso / (_pessoa.altura * _pessoa.altura);
     String classificacao = '';
 
     if (imc < 16) {
@@ -101,9 +114,9 @@ class _CalculadoraIMCState extends State<CalculadoraIMC> {
     } else if (imc < 34.9) {
       classificacao = 'Obesidade Grau I';
     } else if (imc < 39.9) {
-      classificacao = 'Obesidade Grau II';
+      classificacao = 'Obesidade Grau II (severa)';
     } else {
-      classificacao = 'Obesidade Grau III';
+      classificacao = 'Obesidade Grau III (mórbida)';
     }
 
     setState(() {
